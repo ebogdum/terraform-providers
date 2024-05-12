@@ -28,7 +28,6 @@ resource "aws_db_instance" "r_aws_db_instance" {
   engine_version                        = var.engine_version
   final_snapshot_identifier             = var.final_snapshot_identifier
   iam_database_authentication_enabled   = var.iam_database_authentication_enabled
-  id                                    = var.id
   identifier                            = var.identifier
   identifier_prefix                     = var.identifier_prefix
   instance_class                        = var.instance_class

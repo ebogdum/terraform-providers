@@ -114,10 +114,6 @@ variable "iam_database_authentication_enabled" {
   type    = bool
   default = null
 }
-variable "id" {
-  type    = string
-  default = null
-}
 variable "identifier" {
   type    = string
   default = null

@@ -11,12 +11,3 @@ resource "aws_security_group" "r_aws_security_group" {
   tags_all               = var.tags_all
   vpc_id                 = var.vpc_id
 }
-
-git init
-git remote add origin git@github.com:ebogdum/terraform-providers.git
-git branch -M main
-git push -uf origin main
-
-git remote add origin git@gitlab.com:yload/infrastructure/terraform-modules.git
-git branch -M main
-git push -uf origin main

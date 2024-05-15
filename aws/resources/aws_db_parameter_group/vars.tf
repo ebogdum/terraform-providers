@@ -5,10 +5,6 @@ variable "description" {
 variable "family" {
   type = string
 }
-variable "id" {
-  type    = string
-  default = null
-}
 variable "name" {
   type    = string
   default = null
@@ -24,4 +20,12 @@ variable "tags" {
 variable "tags_all" {
   type    = map(string)
   default = null
+}
+
+variable "parameters" {
+  type = map(object({
+    name         = string
+    value        = string
+    apply_method = string
+  }))
 }

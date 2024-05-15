@@ -23,9 +23,5 @@ variable "tags_all" {
 }
 
 variable "parameters" {
-  type = list(object({
-    name         = string
-    value        = string
-    apply_method = string
-  }))
+  type = list(map(string))
 }

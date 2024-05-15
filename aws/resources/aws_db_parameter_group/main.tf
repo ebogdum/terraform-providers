@@ -11,7 +11,7 @@ resource "aws_db_parameter_group" "r_aws_db_parameter_group" {
     content {
       name         = parameter.value[ "name" ]
       value        = parameter.value[ "value" ]
-      apply_method = parameter.value[ "apply_method" ] == null ? "immediate" : parameter.value[ "apply_method" ]
+      apply_method = parameter.value[ "apply_method" ]
     }
   }
 

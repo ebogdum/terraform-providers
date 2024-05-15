@@ -27,9 +27,11 @@ variable "parameters" {
     value        = string
     apply_method = string
   }))
-  default = list(object({
-    name         = null
-    value        = null
-    apply_method = "immediate"
-  }))
+  default = [
+    {
+      name         = null
+      value        = null
+      apply_method = "immediate"
+    }
+  ]
 }

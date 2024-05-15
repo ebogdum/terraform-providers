@@ -22,5 +22,10 @@ variable "tags_all" {
   default = null
 }
 variable "parameters" {
-  type = list(map(string))
+  type = list(object({
+    name         = string
+    value        = string
+    apply_method = string
+  }))
+  default = null
 }

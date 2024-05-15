@@ -23,7 +23,7 @@ variable "tags_all" {
 }
 
 variable "parameters" {
-  type = map(object({
+  type = list(object({
     name         = string
     value        = string
     apply_method = string

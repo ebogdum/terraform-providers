@@ -21,7 +21,5 @@ variable "tags_all" {
   type    = map(string)
   default = null
 }
-
 variable "parameters" {
-  type = list(map(string))
 }

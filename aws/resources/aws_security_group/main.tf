@@ -3,7 +3,6 @@ resource "aws_security_group" "r_aws_security_group" {
   #  aws_vpc_security_group_ingress_rule and aws_vpc_security_group_egress_rule resources
 
   description            = var.description
-  id                     = var.id
   name                   = var.name
   name_prefix            = var.name_prefix
   revoke_rules_on_delete = var.revoke_rules_on_delete

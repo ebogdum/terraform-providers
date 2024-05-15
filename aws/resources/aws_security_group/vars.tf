@@ -2,12 +2,6 @@ variable "description" {
   type    = string
   default = null
 }
-
-variable "id" {
-  type    = string
-  default = null
-}
-
 variable "name" {
   type    = string
   default = null

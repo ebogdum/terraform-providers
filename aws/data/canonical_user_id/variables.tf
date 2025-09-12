@@ -1,0 +1,1 @@
+# This data source does not support any arguments, so no variables are needed

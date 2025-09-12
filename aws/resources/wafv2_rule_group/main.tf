@@ -5,7 +5,7 @@ resource "aws_wafv2_rule_group" "this" {
   name        = var.name
   name_prefix = var.name_prefix
   scope       = var.scope
-  rules_json  = var.rule_json
+  rules_json  = var.rules_json
   tags        = var.tags
 
   dynamic "custom_response_body" {
@@ -1444,6 +1444,18 @@ resource "aws_wafv2_rule_group" "this" {
       cloudwatch_metrics_enabled = visibility_config.value.cloudwatch_metrics_enabled
       metric_name                = visibility_config.value.metric_name
       sampled_requests_enabled   = visibility_config.value.sampled_requests_enabled
+    }
+  }
+
+  dynamic "captcha_config" {
+    for_each = var.captcha_config != null ? [var.captcha_config] : []
+    content {
+      dynamic "immunity_time_property" {
+        for_each = captcha_config.value.immunity_time_property != null ? [captcha_config.value.immunity_time_property] : []
+        content {
+          immunity_time = immunity_time_property.value.immunity_time
+        }
+      }
     }
   }
 

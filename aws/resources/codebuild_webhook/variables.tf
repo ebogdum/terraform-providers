@@ -98,3 +98,25 @@ variable "scope_configuration" {
     error_message = "resource_aws_codebuild_webhook, scope_configuration scope must be one of: GITHUB_ORGANIZATION, GITHUB_GLOBAL."
   }
 }
+
+variable "pull_request_build_policy" {
+  description = "Defines comment-based approval requirements for triggering builds on pull requests."
+  type = object({
+    requires_comment_approval = string
+    approver_roles           = optional(list(string))
+  })
+  default = null
+
+  validation {
+    condition     = var.pull_request_build_policy == null || contains(["DISABLED", "ALL_PULL_REQUESTS", "FORK_PULL_REQUESTS"], var.pull_request_build_policy.requires_comment_approval)
+    error_message = "resource_aws_codebuild_webhook, pull_request_build_policy requires_comment_approval must be one of: DISABLED, ALL_PULL_REQUESTS, FORK_PULL_REQUESTS."
+  }
+
+  validation {
+    condition = var.pull_request_build_policy == null || (
+      var.pull_request_build_policy.requires_comment_approval == "DISABLED" || 
+      var.pull_request_build_policy.approver_roles != null
+    )
+    error_message = "resource_aws_codebuild_webhook, pull_request_build_policy approver_roles must be specified when requires_comment_approval is not DISABLED."
+  }
+}

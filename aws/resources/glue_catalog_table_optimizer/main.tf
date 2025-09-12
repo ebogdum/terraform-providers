@@ -18,6 +18,7 @@ resource "aws_glue_catalog_table_optimizer" "this" {
             snapshot_retention_period_in_days = iceberg_configuration.value.snapshot_retention_period_in_days
             number_of_snapshots_to_retain     = iceberg_configuration.value.number_of_snapshots_to_retain
             clean_expired_files               = iceberg_configuration.value.clean_expired_files
+            run_rate_in_hours                 = iceberg_configuration.value.run_rate_in_hours
           }
         }
       }
@@ -31,6 +32,7 @@ resource "aws_glue_catalog_table_optimizer" "this" {
           content {
             orphan_file_retention_period_in_days = iceberg_configuration.value.orphan_file_retention_period_in_days
             location                             = iceberg_configuration.value.location
+            run_rate_in_hours                    = iceberg_configuration.value.run_rate_in_hours
           }
         }
       }

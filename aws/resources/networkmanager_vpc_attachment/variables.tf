@@ -38,8 +38,10 @@ variable "vpc_arn" {
 variable "options" {
   description = "Options for the VPC attachment"
   type = object({
-    appliance_mode_support = optional(bool)
-    ipv6_support           = optional(bool)
+    appliance_mode_support             = optional(bool)
+    dns_support                        = optional(bool)
+    ipv6_support                       = optional(bool)
+    security_group_referencing_support = optional(bool)
   })
   default = null
 }

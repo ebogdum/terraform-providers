@@ -5,12 +5,13 @@ variable "region" {
 }
 
 variable "agent_arns" {
-  description = "A list of DataSync Agent ARNs with which this location will be associated."
+  description = "A list of DataSync Agent ARNs with which this location will be associated. For agentless cross-cloud transfers, this parameter does not need to be specified."
   type        = list(string)
+  default     = null
 
   validation {
-    condition     = length(var.agent_arns) > 0
-    error_message = "resource_aws_datasync_location_object_storage, agent_arns must contain at least one ARN."
+    condition     = var.agent_arns == null || length(var.agent_arns) > 0
+    error_message = "resource_aws_datasync_location_object_storage, agent_arns must contain at least one ARN if provided."
   }
 }
 

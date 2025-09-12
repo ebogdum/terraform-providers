@@ -134,6 +134,11 @@ output "placement_group" {
   value       = data.aws_instance.this.placement_group
 }
 
+output "placement_group_id" {
+  description = "Placement group ID of the Instance."
+  value       = data.aws_instance.this.placement_group_id
+}
+
 output "placement_partition_number" {
   description = "Number of the partition the instance is in."
   value       = data.aws_instance.this.placement_partition_number

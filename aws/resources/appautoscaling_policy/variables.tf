@@ -14,12 +14,12 @@ variable "name" {
 }
 
 variable "policy_type" {
-  description = "Policy type. Valid values are StepScaling and TargetTrackingScaling. Defaults to StepScaling."
+  description = "Policy type. Valid values are StepScaling, TargetTrackingScaling, and PredictiveScaling. Defaults to StepScaling."
   type        = string
   default     = "StepScaling"
   validation {
-    condition     = contains(["StepScaling", "TargetTrackingScaling"], var.policy_type)
-    error_message = "resource_aws_appautoscaling_policy, policy_type must be one of: StepScaling, TargetTrackingScaling."
+    condition     = contains(["StepScaling", "TargetTrackingScaling", "PredictiveScaling"], var.policy_type)
+    error_message = "resource_aws_appautoscaling_policy, policy_type must be one of: StepScaling, TargetTrackingScaling, PredictiveScaling."
   }
 }
 
@@ -70,7 +70,7 @@ variable "step_scaling_policy_configuration" {
 }
 
 variable "target_tracking_scaling_policy_configuration" {
-  description = "Target tracking policy, requires policy_type = TargetTrackingScaling."
+  description = "Target tracking policy configuration, requires policy_type = TargetTrackingScaling."
   type = object({
     target_value       = number
     disable_scale_in   = optional(bool, false)
@@ -127,5 +127,107 @@ variable "target_tracking_scaling_policy_configuration" {
       length(var.target_tracking_scaling_policy_configuration.predefined_metric_specification.resource_label) <= 1023
     )
     error_message = "resource_aws_appautoscaling_policy, resource_label must be less than or equal to 1023 characters in length."
+  }
+}
+
+variable "predictive_scaling_policy_configuration" {
+  description = "Predictive scaling policy configuration, requires policy_type = PredictiveScaling."
+  type = object({
+    max_capacity_breach_behavior = optional(string)
+    max_capacity_buffer          = optional(number)
+    mode                         = optional(string)
+    scheduling_buffer_time       = optional(number)
+    metric_specification = object({
+      target_value = number
+      customized_capacity_metric_specification = optional(object({
+        metric_data_query = list(object({
+          expression  = optional(string)
+          id          = string
+          label       = optional(string)
+          return_data = optional(bool)
+          metric_stat = optional(object({
+            stat = string
+            unit = optional(string)
+            metric = object({
+              metric_name = optional(string)
+              namespace   = optional(string)
+              dimensions = optional(list(object({
+                name  = optional(string)
+                value = optional(string)
+              })))
+            })
+          }))
+        }))
+      }))
+      customized_load_metric_specification = optional(object({
+        metric_data_query = list(object({
+          expression  = optional(string)
+          id          = string
+          label       = optional(string)
+          return_data = optional(bool)
+          metric_stat = optional(object({
+            stat = string
+            unit = optional(string)
+            metric = object({
+              metric_name = optional(string)
+              namespace   = optional(string)
+              dimensions = optional(list(object({
+                name  = optional(string)
+                value = optional(string)
+              })))
+            })
+          }))
+        }))
+      }))
+      customized_scaling_metric_specification = optional(object({
+        metric_data_query = list(object({
+          expression  = optional(string)
+          id          = string
+          label       = optional(string)
+          return_data = optional(bool)
+          metric_stat = optional(object({
+            stat = string
+            unit = optional(string)
+            metric = object({
+              metric_name = optional(string)
+              namespace   = optional(string)
+              dimensions = optional(list(object({
+                name  = optional(string)
+                value = optional(string)
+              })))
+            })
+          }))
+        }))
+      }))
+      predefined_load_metric_specification = optional(object({
+        predefined_metric_type = string
+        resource_label         = optional(string)
+      }))
+      predefined_metric_pair_specification = optional(object({
+        predefined_metric_type = string
+        resource_label         = optional(string)
+      }))
+      predefined_scaling_metric_specification = optional(object({
+        predefined_metric_type = string
+        resource_label         = optional(string)
+      }))
+    })
+  })
+  default = null
+  validation {
+    condition = var.predictive_scaling_policy_configuration == null || (
+      var.predictive_scaling_policy_configuration != null &&
+      var.predictive_scaling_policy_configuration.max_capacity_breach_behavior == null ||
+      contains(["HonorMaxCapacity", "IncreaseMaxCapacity"], var.predictive_scaling_policy_configuration.max_capacity_breach_behavior)
+    )
+    error_message = "resource_aws_appautoscaling_policy, max_capacity_breach_behavior must be one of: HonorMaxCapacity, IncreaseMaxCapacity."
+  }
+  validation {
+    condition = var.predictive_scaling_policy_configuration == null || (
+      var.predictive_scaling_policy_configuration != null &&
+      var.predictive_scaling_policy_configuration.mode == null ||
+      contains(["ForecastOnly", "ForecastAndScale"], var.predictive_scaling_policy_configuration.mode)
+    )
+    error_message = "resource_aws_appautoscaling_policy, mode must be one of: ForecastOnly, ForecastAndScale."
   }
 }

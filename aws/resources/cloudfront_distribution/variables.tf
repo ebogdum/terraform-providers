@@ -263,12 +263,13 @@ variable "ordered_cache_behavior" {
 variable "origin" {
   description = "One or more origins for this distribution"
   type = list(object({
-    domain_name              = string
-    origin_id                = string
-    connection_attempts      = optional(number, 3)
-    connection_timeout       = optional(number, 10)
-    origin_access_control_id = optional(string)
-    origin_path              = optional(string)
+    domain_name                 = string
+    origin_id                   = string
+    connection_attempts         = optional(number, 3)
+    connection_timeout          = optional(number, 10)
+    origin_access_control_id    = optional(string)
+    origin_path                 = optional(string)
+    response_completion_timeout = optional(number)
     custom_header = optional(list(object({
       name  = string
       value = string
@@ -342,6 +343,15 @@ variable "origin" {
       for origin in var.origin : origin.vpc_origin_config == null || (origin.vpc_origin_config.origin_read_timeout >= 1 && origin.vpc_origin_config.origin_read_timeout <= 60)
     ])
     error_message = "resource_aws_cloudfront_distribution, origin.vpc_origin_config.origin_read_timeout must be between 1-60 seconds."
+  }
+
+  validation {
+    condition = alltrue([
+      for origin in var.origin : origin.response_completion_timeout == null || origin.response_completion_timeout == 0 || (
+        origin.custom_origin_config == null || origin.response_completion_timeout >= origin.custom_origin_config.origin_read_timeout
+      )
+    ])
+    error_message = "resource_aws_cloudfront_distribution, origin.response_completion_timeout must be greater than or equal to origin_read_timeout when specified."
   }
 }
 

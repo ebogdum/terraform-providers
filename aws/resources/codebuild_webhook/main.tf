@@ -27,4 +27,12 @@ resource "aws_codebuild_webhook" "this" {
       domain = scope_configuration.value.domain
     }
   }
+
+  dynamic "pull_request_build_policy" {
+    for_each = var.pull_request_build_policy != null ? [var.pull_request_build_policy] : []
+    content {
+      requires_comment_approval = pull_request_build_policy.value.requires_comment_approval
+      approver_roles           = pull_request_build_policy.value.approver_roles
+    }
+  }
 }

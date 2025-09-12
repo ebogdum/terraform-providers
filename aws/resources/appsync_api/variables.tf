@@ -65,12 +65,13 @@ variable "event_config" {
 
   validation {
     condition = contains([
+      "API_KEY",
+      "AWS_IAM",
       "AMAZON_COGNITO_USER_POOLS",
-      "AWS_LAMBDA",
       "OPENID_CONNECT",
-      "API_KEY"
+      "AWS_LAMBDA"
     ], var.event_config.auth_provider.auth_type)
-    error_message = "resource_aws_appsync_api, auth_provider.auth_type must be one of: AMAZON_COGNITO_USER_POOLS, AWS_LAMBDA, OPENID_CONNECT, API_KEY."
+    error_message = "resource_aws_appsync_api, auth_provider.auth_type must be one of: API_KEY, AWS_IAM, AMAZON_COGNITO_USER_POOLS, OPENID_CONNECT, AWS_LAMBDA."
   }
 
   validation {

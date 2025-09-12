@@ -107,14 +107,22 @@ resource "aws_bedrock_guardrail" "this" {
       dynamic "managed_word_lists_config" {
         for_each = word_policy_config.value.managed_word_lists_config != null ? word_policy_config.value.managed_word_lists_config : []
         content {
-          type = managed_word_lists_config.value.type
+          type           = managed_word_lists_config.value.type
+          input_action   = managed_word_lists_config.value.input_action
+          input_enabled  = managed_word_lists_config.value.input_enabled
+          output_action  = managed_word_lists_config.value.output_action
+          output_enabled = managed_word_lists_config.value.output_enabled
         }
       }
 
       dynamic "words_config" {
         for_each = word_policy_config.value.words_config != null ? word_policy_config.value.words_config : []
         content {
-          text = words_config.value.text
+          text           = words_config.value.text
+          input_action   = words_config.value.input_action
+          input_enabled  = words_config.value.input_enabled
+          output_action  = words_config.value.output_action
+          output_enabled = words_config.value.output_enabled
         }
       }
     }

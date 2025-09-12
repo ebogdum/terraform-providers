@@ -10,7 +10,7 @@ variable "access_type" {
   default     = null
 }
 
-variable "log_sources" {
+variable "source" {
   description = "The supported AWS services from which logs and events are collected"
   type = list(object({
     aws_log_source_resource = optional(object({
@@ -24,18 +24,27 @@ variable "log_sources" {
   }))
 
   validation {
-    condition     = length(var.log_sources) > 0
+    condition     = length(var.source) > 0
     error_message = "resource_aws_securitylake_subscriber, source must contain at least one source block."
   }
 
   validation {
     condition = alltrue([
-      for s in var.log_sources : (
+      for s in var.source : (
         (s.aws_log_source_resource != null ? 1 : 0) +
         (s.custom_log_source_resource != null ? 1 : 0)
       ) == 1
     ])
     error_message = "resource_aws_securitylake_subscriber, source must contain exactly one of aws_log_source_resource or custom_log_source_resource."
+  }
+
+  validation {
+    condition = alltrue([
+      for s in var.source : 
+        s.aws_log_source_resource == null || 
+        contains(["ROUTE53", "VPC_FLOW", "SH_FINDINGS", "CLOUD_TRAIL_MGMT", "LAMBDA_EXECUTION", "S3_DATA", "EKS_AUDIT", "WAF"], s.aws_log_source_resource.source_name)
+    ])
+    error_message = "resource_aws_securitylake_subscriber, aws_log_source_resource.source_name must be one of: ROUTE53, VPC_FLOW, SH_FINDINGS, CLOUD_TRAIL_MGMT, LAMBDA_EXECUTION, S3_DATA, EKS_AUDIT, WAF."
   }
 }
 

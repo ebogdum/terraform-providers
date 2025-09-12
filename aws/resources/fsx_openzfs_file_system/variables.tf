@@ -31,15 +31,6 @@ variable "subnet_ids" {
 variable "throughput_capacity" {
   description = "Throughput (MB/s) of the file system"
   type        = number
-
-  validation {
-    condition = (
-      (contains(["SINGLE_AZ_1"], var.deployment_type) && contains([64, 128, 256, 512, 1024, 2048, 3072, 4096], var.throughput_capacity)) ||
-      (contains(["SINGLE_AZ_2"], var.deployment_type) && contains([160, 320, 640, 1280, 2560, 3840, 5120, 7680, 10240], var.throughput_capacity)) ||
-      (contains(["MULTI_AZ_1"], var.deployment_type))
-    )
-    error_message = "resource_aws_fsx_openzfs_file_system, throughput_capacity must be valid for the deployment_type. For SINGLE_AZ_1: 64, 128, 256, 512, 1024, 2048, 3072, 4096. For SINGLE_AZ_2: 160, 320, 640, 1280, 2560, 3840, 5120, 7680, 10240."
-  }
 }
 
 variable "region" {
@@ -273,6 +264,40 @@ variable "tags" {
   description = "A map of tags to assign to the file system"
   type        = map(string)
   default     = null
+}
+
+variable "user_and_group_quotas" {
+  description = "Specify how much storage users or groups can use on the filesystem"
+  type = list(object({
+    id                         = number
+    storage_capacity_quota_gib = number
+    type                       = string
+  }))
+  default = null
+
+  validation {
+    condition = var.user_and_group_quotas == null || alltrue([
+      for quota in var.user_and_group_quotas :
+      quota.id >= 0 && quota.id <= 2147483647
+    ])
+    error_message = "resource_aws_fsx_openzfs_file_system, user_and_group_quotas.id must be between 0 and 2147483647."
+  }
+
+  validation {
+    condition = var.user_and_group_quotas == null || alltrue([
+      for quota in var.user_and_group_quotas :
+      quota.storage_capacity_quota_gib >= 0 && quota.storage_capacity_quota_gib <= 2147483647
+    ])
+    error_message = "resource_aws_fsx_openzfs_file_system, user_and_group_quotas.storage_capacity_quota_gib must be between 0 and 2147483647."
+  }
+
+  validation {
+    condition = var.user_and_group_quotas == null || alltrue([
+      for quota in var.user_and_group_quotas :
+      contains(["USER", "GROUP"], quota.type)
+    ])
+    error_message = "resource_aws_fsx_openzfs_file_system, user_and_group_quotas.type must be one of: USER, GROUP."
+  }
 }
 
 variable "weekly_maintenance_start_time" {

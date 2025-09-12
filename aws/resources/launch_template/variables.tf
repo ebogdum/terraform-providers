@@ -503,6 +503,7 @@ variable "placement" {
   type = object({
     affinity                = optional(string)
     availability_zone       = optional(string)
+    group_id                = optional(string)
     group_name              = optional(string)
     host_id                 = optional(string)
     host_resource_group_arn = optional(string)
@@ -516,6 +517,11 @@ variable "placement" {
   validation {
     condition     = var.placement == null || var.placement.tenancy == null || contains(["default", "dedicated", "host"], var.placement.tenancy)
     error_message = "resource_aws_launch_template, placement tenancy must be one of: default, dedicated, host."
+  }
+
+  validation {
+    condition     = var.placement == null || (var.placement.group_id == null || var.placement.group_name == null)
+    error_message = "resource_aws_launch_template, placement group_id and group_name are mutually exclusive."
   }
 }
 

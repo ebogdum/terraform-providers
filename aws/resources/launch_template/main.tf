@@ -287,6 +287,7 @@ resource "aws_launch_template" "this" {
     content {
       affinity                = placement.value.affinity
       availability_zone       = placement.value.availability_zone
+      group_id                = placement.value.group_id
       group_name              = placement.value.group_name
       host_id                 = placement.value.host_id
       host_resource_group_arn = placement.value.host_resource_group_arn

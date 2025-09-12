@@ -94,4 +94,162 @@ resource "aws_appautoscaling_policy" "this" {
       }
     }
   }
+
+  dynamic "predictive_scaling_policy_configuration" {
+    for_each = var.predictive_scaling_policy_configuration != null ? [var.predictive_scaling_policy_configuration] : []
+    content {
+      max_capacity_breach_behavior = predictive_scaling_policy_configuration.value.max_capacity_breach_behavior
+      max_capacity_buffer          = predictive_scaling_policy_configuration.value.max_capacity_buffer
+      mode                         = predictive_scaling_policy_configuration.value.mode
+      scheduling_buffer_time       = predictive_scaling_policy_configuration.value.scheduling_buffer_time
+
+      dynamic "metric_specification" {
+        for_each = [predictive_scaling_policy_configuration.value.metric_specification]
+        content {
+          target_value = metric_specification.value.target_value
+
+          dynamic "customized_capacity_metric_specification" {
+            for_each = metric_specification.value.customized_capacity_metric_specification != null ? [metric_specification.value.customized_capacity_metric_specification] : []
+            content {
+              dynamic "metric_data_query" {
+                for_each = customized_capacity_metric_specification.value.metric_data_query
+                content {
+                  expression  = metric_data_query.value.expression
+                  id          = metric_data_query.value.id
+                  label       = metric_data_query.value.label
+                  return_data = metric_data_query.value.return_data
+
+                  dynamic "metric_stat" {
+                    for_each = metric_data_query.value.metric_stat != null ? [metric_data_query.value.metric_stat] : []
+                    content {
+                      stat = metric_stat.value.stat
+                      unit = metric_stat.value.unit
+
+                      dynamic "metric" {
+                        for_each = [metric_stat.value.metric]
+                        content {
+                          metric_name = metric.value.metric_name
+                          namespace   = metric.value.namespace
+
+                          dynamic "dimensions" {
+                            for_each = metric.value.dimensions != null ? metric.value.dimensions : []
+                            content {
+                              name  = dimensions.value.name
+                              value = dimensions.value.value
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          dynamic "customized_load_metric_specification" {
+            for_each = metric_specification.value.customized_load_metric_specification != null ? [metric_specification.value.customized_load_metric_specification] : []
+            content {
+              dynamic "metric_data_query" {
+                for_each = customized_load_metric_specification.value.metric_data_query
+                content {
+                  expression  = metric_data_query.value.expression
+                  id          = metric_data_query.value.id
+                  label       = metric_data_query.value.label
+                  return_data = metric_data_query.value.return_data
+
+                  dynamic "metric_stat" {
+                    for_each = metric_data_query.value.metric_stat != null ? [metric_data_query.value.metric_stat] : []
+                    content {
+                      stat = metric_stat.value.stat
+                      unit = metric_stat.value.unit
+
+                      dynamic "metric" {
+                        for_each = [metric_stat.value.metric]
+                        content {
+                          metric_name = metric.value.metric_name
+                          namespace   = metric.value.namespace
+
+                          dynamic "dimensions" {
+                            for_each = metric.value.dimensions != null ? metric.value.dimensions : []
+                            content {
+                              name  = dimensions.value.name
+                              value = dimensions.value.value
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          dynamic "customized_scaling_metric_specification" {
+            for_each = metric_specification.value.customized_scaling_metric_specification != null ? [metric_specification.value.customized_scaling_metric_specification] : []
+            content {
+              dynamic "metric_data_query" {
+                for_each = customized_scaling_metric_specification.value.metric_data_query
+                content {
+                  expression  = metric_data_query.value.expression
+                  id          = metric_data_query.value.id
+                  label       = metric_data_query.value.label
+                  return_data = metric_data_query.value.return_data
+
+                  dynamic "metric_stat" {
+                    for_each = metric_data_query.value.metric_stat != null ? [metric_data_query.value.metric_stat] : []
+                    content {
+                      stat = metric_stat.value.stat
+                      unit = metric_stat.value.unit
+
+                      dynamic "metric" {
+                        for_each = [metric_stat.value.metric]
+                        content {
+                          metric_name = metric.value.metric_name
+                          namespace   = metric.value.namespace
+
+                          dynamic "dimensions" {
+                            for_each = metric.value.dimensions != null ? metric.value.dimensions : []
+                            content {
+                              name  = dimensions.value.name
+                              value = dimensions.value.value
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          dynamic "predefined_load_metric_specification" {
+            for_each = metric_specification.value.predefined_load_metric_specification != null ? [metric_specification.value.predefined_load_metric_specification] : []
+            content {
+              predefined_metric_type = predefined_load_metric_specification.value.predefined_metric_type
+              resource_label         = predefined_load_metric_specification.value.resource_label
+            }
+          }
+
+          dynamic "predefined_metric_pair_specification" {
+            for_each = metric_specification.value.predefined_metric_pair_specification != null ? [metric_specification.value.predefined_metric_pair_specification] : []
+            content {
+              predefined_metric_type = predefined_metric_pair_specification.value.predefined_metric_type
+              resource_label         = predefined_metric_pair_specification.value.resource_label
+            }
+          }
+
+          dynamic "predefined_scaling_metric_specification" {
+            for_each = metric_specification.value.predefined_scaling_metric_specification != null ? [metric_specification.value.predefined_scaling_metric_specification] : []
+            content {
+              predefined_metric_type = predefined_scaling_metric_specification.value.predefined_metric_type
+              resource_label         = predefined_scaling_metric_specification.value.resource_label
+            }
+          }
+        }
+      }
+    }
+  }
 }

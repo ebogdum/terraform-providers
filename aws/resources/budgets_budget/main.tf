@@ -13,6 +13,7 @@ check "name_mutual_exclusivity" {
 
 resource "aws_budgets_budget" "this" {
   account_id        = var.account_id
+  billing_view_arn  = var.billing_view_arn
   budget_type       = var.budget_type
   limit_amount      = var.limit_amount
   limit_unit        = var.limit_unit

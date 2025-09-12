@@ -77,3 +77,8 @@ output "name_prefix" {
   description = "The prefix of the name of a budget. Unique within accounts."
   value       = data.aws_budgets_budget.this.name_prefix
 }
+
+output "billing_view_arn" {
+  description = "ARN of the billing view."
+  value       = data.aws_budgets_budget.this.billing_view_arn
+}

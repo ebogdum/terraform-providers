@@ -8,6 +8,12 @@ variable "name" {
   }
 }
 
+variable "region" {
+  description = "Region where this resource will be managed. Defaults to the Region set in the provider configuration"
+  type        = string
+  default     = null
+}
+
 variable "hash_key" {
   description = "Attribute to use as the hash (partition) key. Must also be defined as an attribute"
   type        = string
@@ -156,6 +162,10 @@ variable "global_secondary_indexes" {
       max_read_request_units  = optional(number)
       max_write_request_units = optional(number)
     }))
+    warm_throughput = optional(object({
+      read_units_per_second  = optional(number)
+      write_units_per_second = optional(number)
+    }))
   }))
   default = []
 
@@ -178,6 +188,48 @@ variable "global_secondary_indexes" {
       for gsi in var.global_secondary_indexes : length(gsi.hash_key) > 0
     ])
     error_message = "resource_aws_dynamodb_table, global_secondary_indexes hash_key must not be empty."
+  }
+
+  validation {
+    condition = alltrue([
+      for gsi in var.global_secondary_indexes : gsi.on_demand_throughput == null || (
+        gsi.on_demand_throughput.max_read_request_units == null ||
+        gsi.on_demand_throughput.max_read_request_units >= 1 ||
+        gsi.on_demand_throughput.max_read_request_units == -1
+      )
+    ])
+    error_message = "resource_aws_dynamodb_table, global_secondary_indexes on_demand_throughput max_read_request_units must be >= 1 or -1 to remove."
+  }
+
+  validation {
+    condition = alltrue([
+      for gsi in var.global_secondary_indexes : gsi.on_demand_throughput == null || (
+        gsi.on_demand_throughput.max_write_request_units == null ||
+        gsi.on_demand_throughput.max_write_request_units >= 1 ||
+        gsi.on_demand_throughput.max_write_request_units == -1
+      )
+    ])
+    error_message = "resource_aws_dynamodb_table, global_secondary_indexes on_demand_throughput max_write_request_units must be >= 1 or -1 to remove."
+  }
+
+  validation {
+    condition = alltrue([
+      for gsi in var.global_secondary_indexes : gsi.warm_throughput == null || (
+        gsi.warm_throughput.read_units_per_second == null ||
+        gsi.warm_throughput.read_units_per_second >= 12000
+      )
+    ])
+    error_message = "resource_aws_dynamodb_table, global_secondary_indexes warm_throughput read_units_per_second must be at least 12000 when specified."
+  }
+
+  validation {
+    condition = alltrue([
+      for gsi in var.global_secondary_indexes : gsi.warm_throughput == null || (
+        gsi.warm_throughput.write_units_per_second == null ||
+        gsi.warm_throughput.write_units_per_second >= 4000
+      )
+    ])
+    error_message = "resource_aws_dynamodb_table, global_secondary_indexes warm_throughput write_units_per_second must be at least 4000 when specified."
   }
 }
 
@@ -351,6 +403,31 @@ variable "tags" {
   description = "A map of tags to populate on the created table"
   type        = map(string)
   default     = {}
+}
+
+variable "warm_throughput" {
+  description = "Sets the number of warm read and write units for the specified table"
+  type = object({
+    read_units_per_second  = optional(number)
+    write_units_per_second = optional(number)
+  })
+  default = null
+
+  validation {
+    condition = var.warm_throughput == null || (
+      var.warm_throughput.read_units_per_second == null ||
+      var.warm_throughput.read_units_per_second >= 12000
+    )
+    error_message = "resource_aws_dynamodb_table, warm_throughput read_units_per_second must be at least 12000 when specified."
+  }
+
+  validation {
+    condition = var.warm_throughput == null || (
+      var.warm_throughput.write_units_per_second == null ||
+      var.warm_throughput.write_units_per_second >= 4000
+    )
+    error_message = "resource_aws_dynamodb_table, warm_throughput write_units_per_second must be at least 4000 when specified."
+  }
 }
 
 variable "timeouts" {

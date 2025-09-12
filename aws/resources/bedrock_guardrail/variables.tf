@@ -198,11 +198,63 @@ variable "word_policy_config" {
   description = "Word policy config for a guardrail"
   type = object({
     managed_word_lists_config = optional(list(object({
-      type = string
+      type           = string
+      input_action   = optional(string)
+      input_enabled  = optional(bool)
+      output_action  = optional(string)
+      output_enabled = optional(bool)
     })))
     words_config = optional(list(object({
-      text = string
+      text           = string
+      input_action   = optional(string)
+      input_enabled  = optional(bool)
+      output_action  = optional(string)
+      output_enabled = optional(bool)
     })))
   })
   default = null
+
+  validation {
+    condition = var.word_policy_config == null || (
+      var.word_policy_config.managed_word_lists_config == null ||
+      alltrue([
+        for config in var.word_policy_config.managed_word_lists_config :
+        config.input_action == null || contains(["BLOCK", "NONE"], config.input_action)
+      ])
+    )
+    error_message = "resource_aws_bedrock_guardrail, word_policy_config.managed_word_lists_config.input_action must be one of 'BLOCK' or 'NONE'."
+  }
+
+  validation {
+    condition = var.word_policy_config == null || (
+      var.word_policy_config.managed_word_lists_config == null ||
+      alltrue([
+        for config in var.word_policy_config.managed_word_lists_config :
+        config.output_action == null || contains(["BLOCK", "NONE"], config.output_action)
+      ])
+    )
+    error_message = "resource_aws_bedrock_guardrail, word_policy_config.managed_word_lists_config.output_action must be one of 'BLOCK' or 'NONE'."
+  }
+
+  validation {
+    condition = var.word_policy_config == null || (
+      var.word_policy_config.words_config == null ||
+      alltrue([
+        for config in var.word_policy_config.words_config :
+        config.input_action == null || contains(["BLOCK", "NONE"], config.input_action)
+      ])
+    )
+    error_message = "resource_aws_bedrock_guardrail, word_policy_config.words_config.input_action must be one of 'BLOCK' or 'NONE'."
+  }
+
+  validation {
+    condition = var.word_policy_config == null || (
+      var.word_policy_config.words_config == null ||
+      alltrue([
+        for config in var.word_policy_config.words_config :
+        config.output_action == null || contains(["BLOCK", "NONE"], config.output_action)
+      ])
+    )
+    error_message = "resource_aws_bedrock_guardrail, word_policy_config.words_config.output_action must be one of 'BLOCK' or 'NONE'."
+  }
 }

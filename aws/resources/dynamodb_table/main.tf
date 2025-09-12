@@ -1,5 +1,6 @@
 resource "aws_dynamodb_table" "this" {
   name           = var.name
+  region         = var.region
   billing_mode   = var.billing_mode
   hash_key       = var.hash_key
   range_key      = var.range_key
@@ -39,6 +40,14 @@ resource "aws_dynamodb_table" "this" {
         content {
           max_read_request_units  = on_demand_throughput.value.max_read_request_units
           max_write_request_units = on_demand_throughput.value.max_write_request_units
+        }
+      }
+
+      dynamic "warm_throughput" {
+        for_each = global_secondary_index.value.warm_throughput != null ? [global_secondary_index.value.warm_throughput] : []
+        content {
+          read_units_per_second  = warm_throughput.value.read_units_per_second
+          write_units_per_second = warm_throughput.value.write_units_per_second
         }
       }
     }
@@ -95,6 +104,14 @@ resource "aws_dynamodb_table" "this" {
     content {
       attribute_name = ttl.value.attribute_name
       enabled        = ttl.value.enabled
+    }
+  }
+
+  dynamic "warm_throughput" {
+    for_each = var.warm_throughput != null ? [var.warm_throughput] : []
+    content {
+      read_units_per_second  = warm_throughput.value.read_units_per_second
+      write_units_per_second = warm_throughput.value.write_units_per_second
     }
   }
 

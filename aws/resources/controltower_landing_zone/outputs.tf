@@ -15,7 +15,7 @@ output "drift_status" {
 
 output "drift_status_status" {
   description = "The drift status of the landing zone."
-  value       = aws_controltower_landing_zone.this.drift_status[0].status
+  value       = try(aws_controltower_landing_zone.this.drift_status.status, null)
 }
 
 output "latest_available_version" {

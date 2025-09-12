@@ -5,7 +5,7 @@ resource "aws_securitylake_subscriber" "this" {
   subscriber_name        = var.subscriber_name
 
   dynamic "source" {
-    for_each = var.log_sources
+    for_each = var.source
     content {
       dynamic "aws_log_source_resource" {
         for_each = source.value.aws_log_source_resource != null ? [source.value.aws_log_source_resource] : []

@@ -154,12 +154,13 @@ resource "aws_cloudfront_distribution" "this" {
   dynamic "origin" {
     for_each = var.origin
     content {
-      domain_name              = origin.value.domain_name
-      origin_id                = origin.value.origin_id
-      connection_attempts      = origin.value.connection_attempts
-      connection_timeout       = origin.value.connection_timeout
-      origin_access_control_id = origin.value.origin_access_control_id
-      origin_path              = origin.value.origin_path
+      domain_name                 = origin.value.domain_name
+      origin_id                   = origin.value.origin_id
+      connection_attempts         = origin.value.connection_attempts
+      connection_timeout          = origin.value.connection_timeout
+      origin_access_control_id    = origin.value.origin_access_control_id
+      origin_path                 = origin.value.origin_path
+      response_completion_timeout = origin.value.response_completion_timeout
 
       dynamic "custom_header" {
         for_each = origin.value.custom_header

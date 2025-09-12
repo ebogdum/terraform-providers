@@ -37,7 +37,7 @@ resource "aws_fsx_openzfs_volume" "this" {
     content {
       id                         = user_and_group_quotas.value.id
       storage_capacity_quota_gib = user_and_group_quotas.value.storage_capacity_quota_gib
-      type                       = user_and_group_quotas.value.type
+      type                       = user_and_group_quotas.value.Type
     }
   }
 

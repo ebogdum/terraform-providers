@@ -60,11 +60,22 @@ variable "schedule" {
   type = object({
     expression          = string
     duration_in_seconds = optional(number)
+    retry_config = optional(object({
+      max_retries = number
+    }))
   })
 
   validation {
     condition     = can(regex("^(rate\\(\\d+ (minute|minutes|hour)\\)|cron\\(.+\\))$", var.schedule.expression))
     error_message = "resource_aws_synthetics_canary, schedule.expression must be a valid rate expression like 'rate(5 minutes)' or cron expression like 'cron(0 10 * * ? *)'."
+  }
+
+  validation {
+    condition = var.schedule.retry_config == null || (
+      var.schedule.retry_config.max_retries >= 0 && 
+      var.schedule.retry_config.max_retries <= 2
+    )
+    error_message = "resource_aws_synthetics_canary, schedule.retry_config.max_retries must be between 0 and 2."
   }
 }
 
@@ -116,6 +127,7 @@ variable "run_config" {
     memory_in_mb          = optional(number)
     active_tracing        = optional(bool)
     environment_variables = optional(map(string))
+    ephemeral_storage     = optional(number)
   })
   default = null
 
@@ -124,6 +136,20 @@ variable "run_config" {
       var.run_config.memory_in_mb % 64 == 0 && var.run_config.memory_in_mb > 0
     )
     error_message = "resource_aws_synthetics_canary, run_config.memory_in_mb must be a positive multiple of 64."
+  }
+
+  validation {
+    condition = var.run_config == null || var.run_config.timeout_in_seconds == null || (
+      var.run_config.timeout_in_seconds > 0 && var.run_config.timeout_in_seconds <= 840
+    )
+    error_message = "resource_aws_synthetics_canary, run_config.timeout_in_seconds must be between 1 and 840 seconds (14 minutes)."
+  }
+
+  validation {
+    condition = var.run_config == null || var.run_config.ephemeral_storage == null || (
+      var.run_config.ephemeral_storage >= 512 && var.run_config.ephemeral_storage <= 10240
+    )
+    error_message = "resource_aws_synthetics_canary, run_config.ephemeral_storage must be between 512 and 10240 MB."
   }
 }
 
@@ -199,4 +225,24 @@ variable "zip_file" {
   description = "ZIP file that contains the script. It can be up to 225KB. Conflicts with s3_bucket, s3_key, and s3_version"
   type        = string
   default     = null
+}
+
+locals {
+  # Cross-validation: when schedule.retry_config.max_retries is 2, run_config.timeout_in_seconds should be less than 600
+  validate_retry_timeout = (
+    var.schedule.retry_config == null ||
+    var.schedule.retry_config.max_retries != 2 ||
+    var.run_config == null ||
+    var.run_config.timeout_in_seconds == null ||
+    var.run_config.timeout_in_seconds < 600
+  ) ? true : tobool("ERROR: resource_aws_synthetics_canary, when schedule.retry_config.max_retries is 2, run_config.timeout_in_seconds must be less than 600 seconds.")
+
+  # Cross-validation: zip_file conflicts with s3_bucket, s3_key, and s3_version
+  validate_zip_s3_conflict = (
+    var.zip_file == null || (
+      var.s3_bucket == null && 
+      var.s3_key == null && 
+      var.s3_version == null
+    )
+  ) ? true : tobool("ERROR: resource_aws_synthetics_canary, zip_file conflicts with s3_bucket, s3_key, and s3_version.")
 }

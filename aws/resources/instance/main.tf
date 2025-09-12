@@ -20,6 +20,7 @@ resource "aws_instance" "this" {
   key_name                             = var.key_name
   monitoring                           = var.monitoring
   placement_group                      = var.placement_group
+  placement_group_id                   = var.placement_group_id
   placement_partition_number           = var.placement_partition_number
   private_ip                           = var.private_ip
   secondary_private_ips                = var.secondary_private_ips

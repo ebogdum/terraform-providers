@@ -357,9 +357,20 @@ variable "network_interface" {
 }
 
 variable "placement_group" {
-  description = "Placement Group to start the instance in."
+  description = "Placement Group to start the instance in. Conflicts with placement_group_id."
   type        = string
   default     = null
+}
+
+variable "placement_group_id" {
+  description = "Placement Group ID to start the instance in. Conflicts with placement_group."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = !(var.placement_group != null && var.placement_group_id != null)
+    error_message = "resource_aws_instance, placement_group_id conflicts with placement_group. Only one can be specified."
+  }
 }
 
 variable "placement_partition_number" {

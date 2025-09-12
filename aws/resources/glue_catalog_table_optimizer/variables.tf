@@ -54,12 +54,14 @@ variable "configuration" {
         snapshot_retention_period_in_days = optional(number)
         number_of_snapshots_to_retain     = optional(number)
         clean_expired_files               = optional(bool)
+        run_rate_in_hours                 = optional(number)
       }))
     }))
     orphan_file_deletion_configuration = optional(object({
       iceberg_configuration = optional(object({
         orphan_file_retention_period_in_days = optional(number)
         location                             = optional(string)
+        run_rate_in_hours                    = optional(number)
       }))
     }))
   })
@@ -97,5 +99,25 @@ variable "configuration" {
       ) : true
     ) : true
     error_message = "resource_aws_glue_catalog_table_optimizer, configuration.orphan_file_deletion_configuration.iceberg_configuration.orphan_file_retention_period_in_days must be at least 1 day."
+  }
+
+  validation {
+    condition = var.configuration.retention_configuration != null ? (
+      var.configuration.retention_configuration.iceberg_configuration != null ? (
+        var.configuration.retention_configuration.iceberg_configuration.run_rate_in_hours == null ||
+        var.configuration.retention_configuration.iceberg_configuration.run_rate_in_hours >= 1
+      ) : true
+    ) : true
+    error_message = "resource_aws_glue_catalog_table_optimizer, configuration.retention_configuration.iceberg_configuration.run_rate_in_hours must be at least 1 hour."
+  }
+
+  validation {
+    condition = var.configuration.orphan_file_deletion_configuration != null ? (
+      var.configuration.orphan_file_deletion_configuration.iceberg_configuration != null ? (
+        var.configuration.orphan_file_deletion_configuration.iceberg_configuration.run_rate_in_hours == null ||
+        var.configuration.orphan_file_deletion_configuration.iceberg_configuration.run_rate_in_hours >= 1
+      ) : true
+    ) : true
+    error_message = "resource_aws_glue_catalog_table_optimizer, configuration.orphan_file_deletion_configuration.iceberg_configuration.run_rate_in_hours must be at least 1 hour."
   }
 }

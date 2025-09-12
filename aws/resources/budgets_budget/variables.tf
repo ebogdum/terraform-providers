@@ -4,6 +4,12 @@ variable "account_id" {
   default     = null
 }
 
+variable "billing_view_arn" {
+  description = "ARN of the billing view."
+  type        = string
+  default     = null
+}
+
 variable "auto_adjust_data" {
   description = "Object containing AutoAdjustData which determines the budget amount for an auto-adjusting budget."
   type = object({

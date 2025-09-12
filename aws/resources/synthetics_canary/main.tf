@@ -18,6 +18,13 @@ resource "aws_synthetics_canary" "this" {
   schedule {
     expression          = var.schedule.expression
     duration_in_seconds = var.schedule.duration_in_seconds
+
+    dynamic "retry_config" {
+      for_each = var.schedule.retry_config != null ? [var.schedule.retry_config] : []
+      content {
+        max_retries = retry_config.value.max_retries
+      }
+    }
   }
 
   dynamic "vpc_config" {
@@ -36,6 +43,7 @@ resource "aws_synthetics_canary" "this" {
       memory_in_mb          = run_config.value.memory_in_mb
       active_tracing        = run_config.value.active_tracing
       environment_variables = run_config.value.environment_variables
+      ephemeral_storage     = run_config.value.ephemeral_storage
     }
   }
 

@@ -72,17 +72,26 @@ variable "rule_group" {
   description = "A configuration block that defines the rule group rules"
   type = object({
     reference_sets = optional(object({
-      ip_set_references = optional(map(object({
-        reference_arn = string
+      ip_set_references = optional(list(object({
+        key = string
+        ip_set_reference = object({
+          reference_arn = string
+        })
       })))
     }))
 
     rule_variables = optional(object({
-      ip_sets = optional(map(object({
-        definition = list(string)
+      ip_sets = optional(list(object({
+        key = string
+        ip_set = object({
+          definition = list(string)
+        })
       })))
-      port_sets = optional(map(object({
-        definition = list(string)
+      port_sets = optional(list(object({
+        key = string
+        port_set = object({
+          definition = list(string)
+        })
       })))
     }))
 
@@ -262,6 +271,11 @@ variable "rule_group" {
       ) : true
     )
     error_message = "resource_aws_networkfirewall_rule_group, rule_group.reference_sets.ip_set_references can have a maximum of 5 entries."
+  }
+
+  validation {
+    condition = var.rule_group != null && var.rules != null ? false : true
+    error_message = "resource_aws_networkfirewall_rule_group, only one of 'rule_group' or 'rules' can be specified."
   }
 
   validation {

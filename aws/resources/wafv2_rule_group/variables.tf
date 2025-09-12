@@ -1170,7 +1170,7 @@ variable "rule" {
   }
 }
 
-variable "rule_json" {
+variable "rules_json" {
   description = "Raw JSON string to allow more than three nested statements. Conflicts with rule attribute."
   type        = string
   default     = null

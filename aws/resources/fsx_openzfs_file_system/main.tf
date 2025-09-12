@@ -22,6 +22,15 @@ resource "aws_fsx_openzfs_file_system" "this" {
   tags                              = var.tags
   weekly_maintenance_start_time     = var.weekly_maintenance_start_time
 
+  dynamic "user_and_group_quotas" {
+    for_each = var.user_and_group_quotas != null ? var.user_and_group_quotas : []
+    content {
+      id                         = user_and_group_quotas.value.id
+      storage_capacity_quota_gib = user_and_group_quotas.value.storage_capacity_quota_gib
+      type                       = user_and_group_quotas.value.type
+    }
+  }
+
   dynamic "disk_iops_configuration" {
     for_each = var.disk_iops_configuration != null ? [var.disk_iops_configuration] : []
     content {

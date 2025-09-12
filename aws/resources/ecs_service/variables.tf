@@ -36,10 +36,10 @@ variable "alarms" {
 variable "availability_zone_rebalancing" {
   description = "ECS automatically redistributes tasks within a service across Availability Zones"
   type        = string
-  default     = "DISABLED"
+  default     = null
 
   validation {
-    condition     = contains(["ENABLED", "DISABLED"], var.availability_zone_rebalancing)
+    condition     = var.availability_zone_rebalancing == null || contains(["ENABLED", "DISABLED"], var.availability_zone_rebalancing)
     error_message = "resource_aws_ecs_service, availability_zone_rebalancing must be ENABLED or DISABLED."
   }
 }

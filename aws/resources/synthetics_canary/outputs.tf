@@ -53,7 +53,12 @@ output "timeline_last_stopped" {
   value       = aws_synthetics_canary.this.timeline.0.last_stopped
 }
 
+output "vpc_config" {
+  description = "VPC configuration for the canary"
+  value       = var.vpc_config != null ? aws_synthetics_canary.this.vpc_config : []
+}
+
 output "vpc_config_vpc_id" {
   description = "ID of the VPC where this canary is to run"
-  value       = var.vpc_config != null ? aws_synthetics_canary.this.vpc_config.0.vpc_id : null
+  value       = var.vpc_config != null && length(aws_synthetics_canary.this.vpc_config) > 0 ? aws_synthetics_canary.this.vpc_config[0].vpc_id : null
 }

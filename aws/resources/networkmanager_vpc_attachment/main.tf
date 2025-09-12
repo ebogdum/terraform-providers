@@ -6,8 +6,10 @@ resource "aws_networkmanager_vpc_attachment" "this" {
   dynamic "options" {
     for_each = var.options != null ? [var.options] : []
     content {
-      appliance_mode_support = options.value.appliance_mode_support
-      ipv6_support           = options.value.ipv6_support
+      appliance_mode_support             = options.value.appliance_mode_support
+      dns_support                        = options.value.dns_support
+      ipv6_support                       = options.value.ipv6_support
+      security_group_referencing_support = options.value.security_group_referencing_support
     }
   }
 

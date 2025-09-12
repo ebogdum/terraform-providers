@@ -37,13 +37,13 @@ variable "data_compression_type" {
 }
 
 variable "delete_volume_options" {
-  description = "Whether to delete all child volumes and snapshots. Valid values: DELETE_CHILD_VOLUMES_AND_SNAPSHOTS."
-  type        = list(string)
+  description = "Whether to delete all child volumes and snapshots. Valid values: DELETE_CHILD_VOLUMES_AND_SNAPSHOTS. This configuration must be applied separately before attempting to delete the resource to have the desired behavior."
+  type        = string
   default     = null
 
   validation {
-    condition     = var.delete_volume_options == null || (length(var.delete_volume_options) == 1 && var.delete_volume_options[0] == "DELETE_CHILD_VOLUMES_AND_SNAPSHOTS")
-    error_message = "resource_aws_fsx_openzfs_volume, delete_volume_options must be ['DELETE_CHILD_VOLUMES_AND_SNAPSHOTS']."
+    condition     = var.delete_volume_options == null || var.delete_volume_options == "DELETE_CHILD_VOLUMES_AND_SNAPSHOTS"
+    error_message = "resource_aws_fsx_openzfs_volume, delete_volume_options must be 'DELETE_CHILD_VOLUMES_AND_SNAPSHOTS'."
   }
 }
 
@@ -127,26 +127,25 @@ variable "storage_capacity_reservation_gib" {
 }
 
 variable "user_and_group_quotas" {
-  description = "Specify how much storage users or groups can use on the volume. Maximum of 100 items."
+  description = "Specify how much storage users or groups can use on the volume. Maximum number of items defined by FSx for OpenZFS Resource quota."
   type = list(object({
     id                         = number
     storage_capacity_quota_gib = number
-    type                       = string
+    Type                       = string
   }))
   default = null
 
   validation {
     condition = var.user_and_group_quotas == null || (
       var.user_and_group_quotas != null &&
-      length(var.user_and_group_quotas) <= 100 &&
       alltrue([
         for quota in var.user_and_group_quotas :
         quota.id >= 0 && quota.id <= 2147483647 &&
         quota.storage_capacity_quota_gib >= 0 && quota.storage_capacity_quota_gib <= 2147483647 &&
-        contains(["USER", "GROUP"], quota.type)
+        contains(["USER", "GROUP"], quota.Type)
       ])
     )
-    error_message = "resource_aws_fsx_openzfs_volume, user_and_group_quotas must have maximum 100 items, with id and storage_capacity_quota_gib between 0 and 2147483647, and type must be 'USER' or 'GROUP'."
+    error_message = "resource_aws_fsx_openzfs_volume, user_and_group_quotas id and storage_capacity_quota_gib must be between 0 and 2147483647, and Type must be 'USER' or 'GROUP'."
   }
 }
 

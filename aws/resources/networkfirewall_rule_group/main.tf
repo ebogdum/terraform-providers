@@ -22,11 +22,11 @@ resource "aws_networkfirewall_rule_group" "this" {
         for_each = rule_group.value.reference_sets != null ? [rule_group.value.reference_sets] : []
         content {
           dynamic "ip_set_references" {
-            for_each = reference_sets.value.ip_set_references != null ? reference_sets.value.ip_set_references : {}
+            for_each = reference_sets.value.ip_set_references != null ? reference_sets.value.ip_set_references : []
             content {
-              key = ip_set_references.key
+              key = ip_set_references.value.key
               dynamic "ip_set_reference" {
-                for_each = ip_set_references.value != null ? [ip_set_references.value] : []
+                for_each = ip_set_references.value.ip_set_reference != null ? [ip_set_references.value.ip_set_reference] : []
                 content {
                   reference_arn = ip_set_reference.value.reference_arn
                 }
@@ -40,11 +40,11 @@ resource "aws_networkfirewall_rule_group" "this" {
         for_each = rule_group.value.rule_variables != null ? [rule_group.value.rule_variables] : []
         content {
           dynamic "ip_sets" {
-            for_each = rule_variables.value.ip_sets != null ? rule_variables.value.ip_sets : {}
+            for_each = rule_variables.value.ip_sets != null ? rule_variables.value.ip_sets : []
             content {
-              key = ip_sets.key
+              key = ip_sets.value.key
               dynamic "ip_set" {
-                for_each = ip_sets.value != null ? [ip_sets.value] : []
+                for_each = ip_sets.value.ip_set != null ? [ip_sets.value.ip_set] : []
                 content {
                   definition = ip_set.value.definition
                 }
@@ -53,11 +53,11 @@ resource "aws_networkfirewall_rule_group" "this" {
           }
 
           dynamic "port_sets" {
-            for_each = rule_variables.value.port_sets != null ? rule_variables.value.port_sets : {}
+            for_each = rule_variables.value.port_sets != null ? rule_variables.value.port_sets : []
             content {
-              key = port_sets.key
+              key = port_sets.value.key
               dynamic "port_set" {
-                for_each = port_sets.value != null ? [port_sets.value] : []
+                for_each = port_sets.value.port_set != null ? [port_sets.value.port_set] : []
                 content {
                   definition = port_set.value.definition
                 }

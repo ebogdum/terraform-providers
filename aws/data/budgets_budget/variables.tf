@@ -1,11 +1,9 @@
 variable "name" {
   description = "The name of a budget. Unique within accounts."
   type        = string
-  default     = null
-
   validation {
-    condition     = var.name != null || var.name_prefix != null
-    error_message = "data_aws_budgets_budget, name: Either name or name_prefix must be provided."
+    condition     = length(var.name) > 0
+    error_message = "data_budgets_budget, name must not be empty"
   }
 }
 

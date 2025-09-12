@@ -8,6 +8,11 @@ output "available_package_version" {
   value       = aws_opensearch_package.this.available_package_version
 }
 
+output "engine_version" {
+  description = "Engine version that the package is compatible with."
+  value       = aws_opensearch_package.this.engine_version
+}
+
 output "region" {
   description = "Region where this resource is managed."
   value       = aws_opensearch_package.this.region

@@ -88,13 +88,13 @@ variable "ipv6_native" {
 variable "map_customer_owned_ip_on_launch" {
   description = "Specify true to indicate that network interfaces created in the subnet should be assigned a customer owned IP address. The customer_owned_ipv4_pool and outpost_arn arguments must be specified when set to true."
   type        = bool
-  default     = false
+  default     = null
 }
 
 variable "map_public_ip_on_launch" {
   description = "Specify true to indicate that instances launched into the subnet should be assigned a public IP address."
   type        = bool
-  default     = false
+  default     = null
 }
 
 variable "outpost_arn" {
